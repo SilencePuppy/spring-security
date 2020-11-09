@@ -31,6 +31,13 @@
     from oa_account
     where id = #{id,jdbcType=INTEGER}
   </select>
+
+    <select id="selectByAccountName" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select  id, username, account, `password`, memo
+        from oa_account
+        where account = #{account,jdbcType=VARCHAR}
+    </select>
+
   <select id="selectAll" resultMap="BaseResultMap">
     select id, username, account, `password`, memo
     from oa_account

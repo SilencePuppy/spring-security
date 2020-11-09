@@ -1,8 +1,11 @@
 package com.lxb.dao;
 
 import com.lxb.entity.OaRoleAuthorityMap;
+import org.springframework.stereotype.Component;
+
 import java.util.List;
 
+@Component
 public interface OaRoleAuthorityMapMapper {
     int deleteByPrimaryKey(Integer id);
 
