@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lxb.dao.OaAuthorityMapper">
+  <resultMap id="BaseResultMap" type="com.lxb.entity.OaAuthority">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="code" jdbcType="VARCHAR" property="code" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="authority_module_id" jdbcType="INTEGER" property="authority_module_id" />
+    <result column="authority_url" jdbcType="VARCHAR" property="authority_url" />
+    <result column="type" jdbcType="BIT" property="type" />
+    <result column="sequence" jdbcType="INTEGER" property="sequence" />
+    <result column="status" jdbcType="BIT" property="status" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from oa_authority
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.lxb.entity.OaAuthority">
+    insert into oa_authority (id, code, `name`, 
+      authority_module_id, authority_url, `type`, 
+      `sequence`, `status`)
+    values (#{id,jdbcType=INTEGER}, #{code,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
+      #{authority_module_id,jdbcType=INTEGER}, #{authority_url,jdbcType=VARCHAR}, #{type,jdbcType=BIT}, 
+      #{sequence,jdbcType=INTEGER}, #{status,jdbcType=BIT})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.lxb.entity.OaAuthority">
+    update oa_authority
+    set code = #{code,jdbcType=VARCHAR},
+      `name` = #{name,jdbcType=VARCHAR},
+      authority_module_id = #{authority_module_id,jdbcType=INTEGER},
+      authority_url = #{authority_url,jdbcType=VARCHAR},
+      `type` = #{type,jdbcType=BIT},
+      `sequence` = #{sequence,jdbcType=INTEGER},
+      `status` = #{status,jdbcType=BIT}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, code, `name`, authority_module_id, authority_url, `type`, `sequence`, 
+    `status`
+    from oa_authority
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, code, `name`, authority_module_id, authority_url, `type`, `sequence`, 
+    `status`
+    from oa_authority
+  </select>
+</mapper>
