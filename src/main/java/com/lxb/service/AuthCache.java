@@ -43,7 +43,7 @@ public class AuthCache {
     @PostConstruct
     public void initMethod(){
         initAccountInfos();
-        initRoleInfos();;
+        initRoleInfos();
         initAuthorityInfos();
         initAccountRoleMap();
         initRoleAuthorityMap();
@@ -73,10 +73,7 @@ public class AuthCache {
     private void initAccountRoleMap(){
         List<OaUserRoleMap> oaUserRoleList = oaUserRoleMapMapper.selectAll();
         for (OaUserRoleMap oaUserRole : oaUserRoleList) {
-            List<Integer> roleIds = userRoleMap.get(oaUserRole.getUser_id());
-            if (roleIds == null) {
-                roleIds = new ArrayList<>();
-            }
+            List<Integer> roleIds = userRoleMap.computeIfAbsent(oaUserRole.getUser_id(), k -> new ArrayList<>());
             roleIds.add(oaUserRole.getRole_id());
         }
     }
@@ -84,12 +81,19 @@ public class AuthCache {
     private void initRoleAuthorityMap(){
         List<OaRoleAuthorityMap> oaRoleAuthorityList = oaRoleAuthorityMapMapper.selectAll();
         for (OaRoleAuthorityMap oaRoleAuthority : oaRoleAuthorityList) {
-            List<Integer> authorities = roleAuthorityMap.get(oaRoleAuthority.getRole_id());
-            if (authorities == null) {
-                authorities = new ArrayList<>();
-            }
+            List<Integer> authorities = roleAuthorityMap.computeIfAbsent(oaRoleAuthority.getRole_id(), k -> new ArrayList<>());
             authorities.add(oaRoleAuthority.getAuthority_module_id());
         }
+    }
+
+    public List<String> getAccountRoles(Integer accountId) {
+        List<Integer> roleIds = userRoleMap.get(accountId);
+        List<String> roles = new ArrayList<>();
+        for (Integer roleId : roleIds) {
+            OaRole oaRole = roleInfos.get(roleId);
+            roles.add(oaRole.getRole_name());
+        }
+        return roles;
     }
 
     public List<String> getAccountAuthorities(Integer accountId){
@@ -105,4 +109,19 @@ public class AuthCache {
         return authorities;
     }
 
+    public List<String> getAccountAuthoriteis(String accountName) {
+        Integer accountId = null;
+        for (OaAccount value : accountInfos.values()) {
+            if (value.getAccount().equals(accountName)) {
+                accountId = value.getId();
+                break;
+            }
+        }
+
+        if (accountId ==null){
+            return new ArrayList<>();
+        }
+
+        return getAccountAuthorities(accountId);
+    }
 }
