@@ -1,8 +1,10 @@
 package com.lxb.controller;
 
+import com.lxb.RedisCache;
 import com.lxb.entity.OaAccount;
 import com.lxb.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,6 +20,11 @@ public class MainController {
 
     @Autowired
     AccountService accountService;
+
+    @RequestMapping("/kick/out/{userName}")
+    public void kickOut(@PathVariable("userName") String userName) {
+        RedisCache.kickOutUser(userName);
+    }
 
     @RequestMapping("/account/look/list")
     public List<OaAccount> accountList() {

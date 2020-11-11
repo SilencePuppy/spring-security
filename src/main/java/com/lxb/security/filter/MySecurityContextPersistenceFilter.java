@@ -42,8 +42,6 @@ public class MySecurityContextPersistenceFilter extends GenericFilterBean{
             return;
         }
 
-        final boolean debug = logger.isDebugEnabled();
-
         request.setAttribute(FILTER_APPLIED, Boolean.TRUE);
 
         HttpRequestResponseHolder holder = new HttpRequestResponseHolder(request,

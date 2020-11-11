@@ -4,6 +4,7 @@ import com.lxb.RedisCache;
 import com.lxb.bo.UserDelegator;
 import com.lxb.security.persistence.MySecurityContextRepository;
 import jdk.nashorn.internal.parser.Token;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -25,7 +26,7 @@ public class MyAuthenticationSuccessHandler implements AuthenticationSuccessHand
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         UserDelegator.UserDelegatorDetail delegatorDetail=new UserDelegator.UserDelegatorDetail();
         delegatorDetail.setToken(UUID.randomUUID().toString());
-        User user = new User(authentication.getPrincipal().toString(), "", authentication.getAuthorities());
+        User user = (User) authentication.getPrincipal();
         UserDelegator userDelegator =new UserDelegator(user,delegatorDetail);
         RedisCache.putUserInfo(delegatorDetail.getToken(),userDelegator);
         response.addCookie(new Cookie(MySecurityContextRepository.OA_SECURITY_TOKEN_KEY,delegatorDetail.getToken()));

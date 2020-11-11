@@ -7,18 +7,18 @@ import com.lxb.security.interceptor.MyVoter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDecisionVoter;
-import org.springframework.security.access.vote.AffirmativeBased;
+import org.springframework.security.access.vote.UnanimousBased;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.DefaultLoginPageConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.access.expression.WebExpressionVoter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
-import org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -36,7 +36,8 @@ public class OaHttpWebConfigure extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .addFilterBefore(new MySecurityContextPersistenceFilter(), LogoutFilter.class)
-                .apply(new DefaultLoginPageConfigurer<>()).and()
+                .apply(new DefaultLoginPageConfigurer<>())
+                .and()
                 .authorizeRequests()
                 .anyRequest().authenticated()
                 .accessDecisionManager(accessDecisionManager())
@@ -50,20 +51,13 @@ public class OaHttpWebConfigure extends WebSecurityConfigurerAdapter {
                 .logout();
     }
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        super.configure(auth);
-    }
-
-    @Override
-    public void configure(WebSecurity web) throws Exception {
-        super.configure(web);
-    }
 
     public AccessDecisionManager accessDecisionManager(){
         MyVoter myVoter = getApplicationContext().getBean("myVoter", MyVoter.class);
-        List<AccessDecisionVoter<? extends Object>> voters = Arrays.asList(myVoter);
-        return  new AffirmativeBased(voters);
+        List<AccessDecisionVoter<? extends Object>> voters = new ArrayList<>();
+        voters.add(new WebExpressionVoter());
+        voters.add(myVoter);
+        return  new UnanimousBased(voters);
     }
     public AccessDeniedHandler accessDeniedHandler(){
         return getApplicationContext().getBean("myAccessDeniedHandlerImpl", MyAccessDeniedHandlerImpl.class);

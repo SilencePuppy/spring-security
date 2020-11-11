@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.context.HttpRequestResponseHolder;
 import org.springframework.security.web.context.SecurityContextRepository;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Collection;
@@ -36,11 +37,22 @@ public class MySecurityContextRepository implements SecurityContextRepository {
     }
 
     private SecurityContext getContextFromRedis(HttpServletRequest request) {
-        String token = request.getHeader(OA_SECURITY_TOKEN_KEY);
-        if (token == null) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null) {
             return null;
         }
-        UserDelegator userDelegator = RedisCache.getUserInfo(token);
+        Cookie cookie=null;
+        for (Cookie c : cookies) {
+            if (c.getName().equals(OA_SECURITY_TOKEN_KEY)) {
+                cookie = c;
+                break;
+            }
+        }
+
+        if (cookie == null) {
+            return null;
+        }
+        UserDelegator userDelegator = RedisCache.getUserInfo(cookie.getValue());
 
         if (userDelegator == null) {
             return null;
